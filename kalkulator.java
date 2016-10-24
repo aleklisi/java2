@@ -1,5 +1,12 @@
 import java.math.*;
-
+/*
+ * @autor Aleksander Lisicecki
+ * @version 1.1 i ostatnia :p
+ *
+ */
+/*
+ * klasa-kalkulator jakby slownie "przeciaza operacje silni mnizeni i sumowania dla dowolnie duzyc int"
+ */
 class Funkcyje{
 	static BigInteger silnia (String arg){
 		Integer argument = new Integer(arg);
@@ -31,9 +38,6 @@ public class kalkulator {
 		if (args[0].equals("silnia")){
 			System.out.println(Funkcyje.silnia(args[1]));
 		}
-		//if (args.length  < 2){
-		//	throw new RuntimeException("za malo argumentow :P");
-		//}
 		if (args[0].equals("iloczyn")){
 			System.out.println(Funkcyje.iloczyn(args[1],args[2]));
 		}
