@@ -55,9 +55,41 @@ public class Cw5Str131 {
 			}
 		return wynik;
 	}
-	
+	static String xor (int arg1, int arg2){
+		String argument1 = dziesDoBin(arg1);
+		String argument2 = dziesDoBin(arg2);
+		String wynik = "";
+		for (int i = 1; i < argument1.length() - 1; i++){
+			argument2 += "0";
+		}		
+		for (int i = 1; i < argument2.length() - 1; i++){
+			argument1 += "0";
+		}
+			for (int i = 0; i < argument1.length()-1 && i < argument2.length()-1; i++){
+				if (argument1.charAt(i) != argument2.charAt(i)){
+					wynik += "1";
+				}
+				else{
+					wynik += "0";
+				}
+			}
+		return wynik;
+	}
+	static String not (int arg){
+		String argument = dziesDoBin(arg);
+		String wynik = "";
+			for (int i = 0; i < argument.length(); i++){
+				if (argument.charAt(i) == '0'){
+					wynik += "1";
+				}
+				else{
+					wynik += "0";
+				}
+			}
+		return wynik;
+	}
 	static final int a = 6;
-	static final int b = 155;
+	static final int b = 7;
 	public static void main (String[] args){
 		System.out.println(dziesDoBin(8));
 		System.out.println("A: " + dziesDoBin(a) + " B: " + dziesDoBin(b));
@@ -65,8 +97,11 @@ public class Cw5Str131 {
 		System.out.println("a & b = " + Integer.toBinaryString(a & b));
 		System.out.println("a | b = " + or(a ,b));
 		System.out.println("a | b = " + Integer.toBinaryString(a | b));
+		System.out.println("a ^ b = " + xor(a ,b));
 		System.out.println("a ^ b = " + Integer.toBinaryString(a ^ b));
+		System.out.println(" ~a = " + not(a));
 		System.out.println(" ~a = " + Integer.toBinaryString(~a));
+		System.out.println(" ~b = " + not(b));
 		System.out.println(" ~b = " + Integer.toBinaryString(~b));
 	}
 }
