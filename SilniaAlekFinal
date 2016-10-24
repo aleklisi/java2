@@ -1,7 +1,7 @@
 import java.math.*;
 import java.util.*;
-/*
- * @autor Aleksander Lisicecki
+/**
+ * @author Aleksander Lisicecki
  * @version 1.1 i ostatnia :p
  *
  */
@@ -11,8 +11,7 @@ interface implementacja{
 	void dodajWynikSilni(int arg, BigInteger wyn);
 	BigInteger liczSilnie (int arg);
 }
-/*kalsa liczaca silnie zapisuje wczeniej liczone wyniki i wykorzystuje je do oalszych olbczen do 3 wyników 
- * 
+/**kalsa liczaca silnie zapisuje wczeniej liczone wyniki i wykorzystuje je do oalszych olbczen do 3 wyników 
  */
 class  WynikiSilni implements implementacja{
 	int rozmiarBufora = 3;
@@ -20,7 +19,7 @@ class  WynikiSilni implements implementacja{
 	 void usunNmniejszyElement(){ 
 		buforek.remove(buforek.firstKey());
 	}
-	 /*
+	 /**
 	  * pobiera arg czyli liczbez której liczymy silnie i wynik wyn i dodaje do bufora 
 	  * jak bufor jest pelny to usuwa najmniejszy ze starych wyników 
 	  */
@@ -32,7 +31,7 @@ class  WynikiSilni implements implementacja{
 			buforek.put(arg,wyn);
 		}
 	}	
-	/*
+	/**
 	 * liczy silnie z arg, jesli to mozliwe korzysta z wczesniejszych obliczen
 	 */
 	public BigInteger liczSilnie (int arg){
