@@ -1,0 +1,131 @@
+import java.io.*;
+import java.math.*;
+import java.util.*;
+
+interface SzklanaPulapka {
+
+	void przejdzPoKolejceLiczac();
+
+	void licz(Integer agrument);
+
+	void dodajDoKolejkiObliczen(Integer argument);
+
+	void dodajPare(Integer argument, BigInteger wynik);
+
+	boolean czyZawiera(Integer argument);
+
+	void wyczyscKolejke();
+
+	void wyczyscBuforek();
+
+	void wypiszBuforek();
+
+	void wypiszKolejke();
+
+	void wczytajLiczbyZPliku(String sciezkaDostepu);
+
+	//void dodajLinieLiczb(String linia);
+}
+
+class Silnia implements SzklanaPulapka {
+	TreeMap<Integer, BigInteger> buforek = new TreeMap<Integer, BigInteger>();
+	LinkedList<Integer> kolejkaObliczen = new LinkedList<Integer>();
+
+	public void dodajLinieLiczb(String linia) {
+		String [] liczbyStr = linia.split(" +");
+		Integer liczbaDodawnaInt;
+		for (int i = 0; i < liczbyStr.length;i++){
+			liczbaDodawnaInt = new Integer(liczbyStr[i]);
+			System.out.println(liczbaDodawnaInt);
+			dodajDoKolejkiObliczen(liczbaDodawnaInt);
+		}
+	}
+
+	public void wczytajLiczbyZPliku(String sciezkaDostepu) {
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(sciezkaDostepu));
+			String linia = br.readLine();
+			while (linia != null) {
+				dodajLinieLiczb(linia);
+				linia = br.readLine();
+			}
+			br.close();
+		} catch (IOException e) {
+			System.out.println("moze dodaj ten plik");
+		}
+	}
+
+	public void dodajDoKolejkiObliczen(Integer argument) {
+		kolejkaObliczen.add(argument);
+	}
+
+	public boolean czyZawiera(Integer argument) {
+		if (buforek.containsKey(argument)) {
+			return true;
+		}
+		return false;
+	}
+
+	public void wyczyscKolejke() {
+		kolejkaObliczen.clear();
+	}
+
+	public void wyczyscBuforek() {
+		buforek.clear();
+	}
+
+	public BigInteger znajdzWartosc(Integer argument) {
+		if (!buforek.containsKey(argument)) {
+			throw new RuntimeException("potrzebujemy wiekszej łodzi");
+		}
+		BigInteger wynik = buforek.get(argument);
+		return wynik;
+	}
+
+	public void przejdzPoKolejceLiczac() {
+		Collections.sort(kolejkaObliczen);
+		ListIterator<Integer> listIterator = kolejkaObliczen.listIterator();
+		while (listIterator.hasNext()) {
+			licz(listIterator.next());
+		}
+	}
+
+	public void licz(Integer agrument) {
+
+		if (!buforek.containsKey(agrument)) {
+			BigInteger wynik = new BigInteger("1");
+			for (int i = 2; i <= agrument; i++) {
+				wynik = wynik.multiply(new BigInteger("" + i));
+			}
+			dodajPare(agrument, wynik);
+		}
+	}
+
+	public void wypiszBuforek() {
+		System.out.println(buforek);
+	}
+
+	public void wypiszKolejke() {
+		System.out.println(kolejkaObliczen);
+	}
+
+	public void dodajPare(Integer argument, BigInteger wynik) {
+		buforek.put(argument, wynik);
+	}
+
+}
+
+public class SilniaInterface {
+	public static void main(String[] args) {
+		SzklanaPulapka[] szklaneczka = { new Silnia() };
+		
+		szklaneczka[0].wczytajLiczbyZPliku("C:\\Users\\Admin\\workspace\\SilniaInterface\\src\\przykladoweLiczby.txt");
+		szklaneczka[0].wypiszBuforek();
+		szklaneczka[0].wypiszKolejke();
+		szklaneczka[0].przejdzPoKolejceLiczac();
+		szklaneczka[0].wypiszBuforek();
+		szklaneczka[0].wypiszKolejke();
+		
+		//szklaneczka[0].dodajLinieLiczb();
+	}
+}
