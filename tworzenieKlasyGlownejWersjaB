@@ -1,0 +1,120 @@
+import java.io.*;
+
+//B
+class TworcaNowegoProgramu {
+	static String pozyskiwanieNazwyPaczkiJakoPaczki(String slowoSciezka) {
+		// System.out.println("pozyskiwanieNazwyPaczkiJakoPaczki");
+
+		String wynik = "";
+		for (int i = 0; i < znajdzOstatniaKropke(slowoSciezka); i++) {
+			wynik += slowoSciezka.charAt(i);
+		}
+		return wynik;
+	}
+
+	static String znajdzNazweKlasy(String slowoSciezka) {
+		// System.out.println("znajdzNazweKlasy");
+		String wynik = "";
+		for (int i = znajdzOstatniaKropke(slowoSciezka) + 1; i < slowoSciezka.length(); i++) {
+			wynik += slowoSciezka.charAt(i);
+		}
+		// System.out.println(wynik);
+
+		return wynik;
+	}
+
+	static String pozyskiwanieNazwyPaczkiJakoSciezka(String slowoSciezka) {
+		// System.out.println("pozyskiwanieNazwyPaczkiJakoNazwaSciezka");
+		String wynik = "C:";
+		String wynikPosredni = "";
+		for (int i = 0; i < znajdzOstatniaKropke(slowoSciezka) + 1; i++) {
+			if (slowoSciezka.charAt(i) == '.') {
+				wynik += "//" + wynikPosredni;
+				wynikPosredni = "";
+			} else {
+				wynikPosredni += slowoSciezka.charAt(i);
+			}
+			//System.out.println(wynik);
+		}
+		return wynik;
+	}
+
+	static int znajdzOstatniaKropke(String slowoSciezka) {
+		// System.out.println("znajdzOstatniaKropke");
+		int wynik = 0;
+		for (int i = 0; i < slowoSciezka.length() - 1; i++) {
+			if (slowoSciezka.charAt(i) == '.') {
+				wynik = i;
+			}
+		}
+		return wynik;
+	}
+
+	static void stworzSciezkeFolderow(String sciezkaFolderow) {
+		// System.out.println("stworzSciezkeFolderow");
+		File files = new File(sciezkaFolderow);
+		if (!files.exists()) {
+			if (files.mkdirs()) {
+				System.out.println("Multiple directories are created!");
+			} else {
+				System.out.println("Failed to create multiple directories!");
+			}
+		}
+	}
+
+	static void odczytajNazwyKlas(String sciezkaDoPlikuZNazwamiKlas) throws IOException {
+		// System.out.println("odczytajNazwyKlas");
+		BufferedReader br = new BufferedReader(new FileReader(sciezkaDoPlikuZNazwamiKlas));
+		try {
+			String line = br.readLine();
+			while (line != null) {
+				wpiszDoPliku(line, "UTF-8");
+				line = br.readLine();
+			}
+		} finally {
+			br.close();
+		}
+	}
+
+	static void wpiszDoPliku(String nazwaSciezkiIKlasy, String kodowanie) {
+		// System.out.println("wpiszDoPliku");
+		stworzSciezkeFolderow(pozyskiwanieNazwyPaczkiJakoSciezka(nazwaSciezkiIKlasy));
+		try {
+			String nazwaKlasy = znajdzNazweKlasy(nazwaSciezkiIKlasy); 
+			String umiejscowieniePliku = pozyskiwanieNazwyPaczkiJakoSciezka(nazwaSciezkiIKlasy);
+			PrintWriter writer = new PrintWriter(umiejscowieniePliku+ "\\" + nazwaKlasy + ".java", kodowanie);
+			writer.println("package " + pozyskiwanieNazwyPaczkiJakoPaczki(nazwaSciezkiIKlasy) + ";");
+			writer.println("/**");
+			writer.println("*To jest wygenerowana automatycznie klasa " + nazwaKlasy);
+			writer.println(" */");
+			writer.println("public class " + nazwaKlasy + "() {");
+			writer.println("/**");
+			writer.println("* Domyslny konstruktor klasy " + nazwaKlasy);
+			writer.println("*/");
+			writer.println("    public " + nazwaKlasy + "() {");
+			writer.println("	// metoda wygenerowana - nalezy uzupelnic implementacje");
+			writer.println("	}");
+			writer.println("/**");
+			writer.println("*Metoda main automatycznie wygenerowana ");
+			writer.println("* @param args tablica argumentow przekazanych do programu ");
+			writer.println("*/");
+			writer.println("public static void main(String[] args) {");
+			writer.println(
+					"	System.out.println(\"Metoda jeszcze nie jest zaimplementowana - tylko wygenerowany wzorzec.\"); ");
+			writer.println("	}");
+			writer.println("}");
+			writer.close();
+		} catch (Exception e) {
+			System.out.println("cos nie poszlo");
+		}
+	}
+}
+
+public class tworzenieKlasyGlownej {
+	public static void main(String[] args) throws IOException {
+		System.out.println("F");
+		TworcaNowegoProgramu.odczytajNazwyKlas("nazwyklas.txt");
+		System.out.println("F");
+
+	}
+}
