@@ -1,0 +1,51 @@
+import java.io.*;
+//A
+class TworcaNowegoProgramu{
+	static void odczytajNazwyKlas(String sciezkaDoPlikuZNazwamiKlas, String lokaliazcjaINazwaPliku) throws IOException{
+		BufferedReader br = new BufferedReader(new FileReader(sciezkaDoPlikuZNazwamiKlas));
+	try {
+	    String line = br.readLine();
+	    while (line != null) {
+	        wpiszDoPliku(lokaliazcjaINazwaPliku,"UTF-8",line);
+	        line = br.readLine();
+	    }
+	} finally {
+	    br.close();
+	}
+}
+	static void wpiszDoPliku(String lokaliazcjaINazwaPliku, String kodowanie, String nazwaKlasy){
+		try{
+			PrintWriter writer = new PrintWriter(nazwaKlasy + ".java", kodowanie);
+			writer.println("package pl.edu.agh.kis;");
+			writer.println("/**");
+			writer.println("*To jest wygenerowana automatycznie klasa " + nazwaKlasy);
+			writer.println(" */");
+			writer.println("public class " + nazwaKlasy + "() {");
+			writer.println("/**");
+			writer.println("* Domyslny konstruktor klasy " + nazwaKlasy);
+			writer.println("*/");
+			writer.println("    public " + nazwaKlasy + "() {");
+			writer.println("	// metoda wygenerowana - nalezy uzupelnic implementacje");
+			writer.println("	}" );
+			writer.println("/**");
+			writer.println("*Metoda main automatycznie wygenerowana ");
+			writer.println("* @param args tablica argumentow przekazanych do programu ");
+			writer.println("*/");
+			writer.println("public static void main(String[] args) {");
+			writer.println("	System.out.println(\"Metoda jeszcze nie jest zaimplementowana - tylko wygenerowany wzorzec.\"); ");
+			writer.println("	}");
+			writer.println("}");
+			writer.close();
+		} catch (Exception e) {
+	   System.out.println("cos nie poszlo");
+	}
+	}
+}
+public class tworzenieKlasyGlownej {
+	public static void main(String []args) throws IOException{
+		
+		TworcaNowegoProgramu.odczytajNazwyKlas("C:\\testy java\\nazwyklas.txt","C:\\testy java\\");
+	}
+}
+
+
