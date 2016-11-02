@@ -1,12 +1,12 @@
 import java.io.*;
 //A
 class TworcaNowegoProgramu{
-	static void odczytajNazwyKlas(String sciezkaDoPlikuZNazwamiKlas, String lokaliazcjaINazwaPliku) throws IOException{
+	static void odczytajNazwyKlas(String sciezkaDoPlikuZNazwamiKlas) throws IOException{
 		BufferedReader br = new BufferedReader(new FileReader(sciezkaDoPlikuZNazwamiKlas));
 	try {
 	    String line = br.readLine();
 	    while (line != null) {
-	        wpiszDoPliku(lokaliazcjaINazwaPliku,"UTF-8",line);
+	        wpiszDoPliku(line,"UTF-8",line);
 	        line = br.readLine();
 	    }
 	} finally {
@@ -44,7 +44,7 @@ class TworcaNowegoProgramu{
 public class tworzenieKlasyGlownej {
 	public static void main(String []args) throws IOException{
 		
-		TworcaNowegoProgramu.odczytajNazwyKlas("C:\\testy java\\nazwyklas.txt","C:\\testy java\\");
+		TworcaNowegoProgramu.odczytajNazwyKlas("C:\\testy java\\nazwyklas.txt");
 	}
 }
 
