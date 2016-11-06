@@ -1,0 +1,22 @@
+
+class Detergent{
+	void scrub(){
+		System.out.println("Detergent.scrub");
+	}
+}
+class Ciff extends Detergent{
+	void scrub(){
+		System.out.println("Ciff.scrub");
+	}
+	void sterylize(){
+		System.out.println("Ciff.sterylize");
+	}
+}
+public class cw2str214 {
+	public static void main(String[] args) {
+		Ciff objCiff = new Ciff();
+		Detergent objDet = new Ciff();
+		objCiff.scrub();
+		objDet.scrub();
+	}
+}
