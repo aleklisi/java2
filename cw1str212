@@ -1,0 +1,16 @@
+class Klasa1{
+	int a;
+}
+class Klasa2{
+	Klasa1 b = new Klasa1();
+	void wypisz(){
+		System.out.print(b.a);
+	}
+}
+public class cw1str212 {
+	public static void main(String[] args) {
+		Klasa2 objekt = new Klasa2();
+		objekt.b.a = 2;
+		objekt.wypisz();
+	}
+}
