@@ -1,0 +1,22 @@
+class A{
+	A(){
+		System.out.println("tu A");
+	}
+}
+class B{
+	B(){
+		System.out.println("tu B");
+	}
+}
+class C extends A{
+	B b = new B();
+	C(){
+		System.out.println("tu C");
+	}
+}
+public class cw5str215 {
+	public static void main(String[] args) {
+		C obj = new C();
+		C ojb;
+	}
+}
