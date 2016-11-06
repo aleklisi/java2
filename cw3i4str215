@@ -1,0 +1,18 @@
+//realizuje tez ćw 4
+class Detergent{
+	Detergent(){
+		System.out.println("Detergent.scrub");
+	}
+}
+class Ciff extends Detergent{
+	Ciff(){
+		System.out.println("Ciff.scrub");
+	}
+}
+public class cw3str215 {
+	public static void main(String[] args) {
+		Ciff objCiff = new Ciff();
+		Detergent objDet = new Ciff();
+
+	}
+}
