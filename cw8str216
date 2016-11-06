@@ -1,0 +1,21 @@
+class Auto {
+	Auto(int predk) {
+		System.out.println(predk);
+	}
+}
+
+class Ciezarowka extends Auto {
+	Ciezarowka(int predk) {
+		super(5);
+	}
+
+	Ciezarowka() {
+		super(5);
+	}
+}
+
+public class cw8str216 {
+	public static void main(String[] args) {
+
+	}
+}
