@@ -90,9 +90,11 @@ class Silnia implements SzklanaPulapka {
 			dodajDoKolejkiObliczen(liczbaDodawnaInt);
 		}
 	}
-	public void usunNajstarszeElementy(int liczbaUsuwanych){
-		for (int i = 0; i < liczbaUsuwanych; i++){
-		buforek.remove(wiekElementow.removeLast());
+	public void usunNajstarszeElementy(){
+		{
+			int i = wiekElementow.removeLast();
+		buforek.remove(i);
+		System.out.println("usuwam: " + i);
 		}
 	}
 	/**
@@ -121,8 +123,9 @@ class Silnia implements SzklanaPulapka {
 	public void dodajDoKolejkiObliczen(Integer argument) {
 		kolejkaObliczen.add(argument);
 		wiekElementow.addFirst(argument);
+		System.out.println("dodaje: " + argument);
 		if (wiekElementow.size() > maxSizeOfBuforek){
-			usunNajstarszeElementy(1);
+			usunNajstarszeElementy();
 		}
 	}
 
