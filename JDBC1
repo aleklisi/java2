@@ -1,0 +1,488 @@
+package pl.edu.agh.kis;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.*;
+import java.util.*;
+import java.sql.*;
+import java.sql.Date;
+import java.io.*;
+
+import org.w3c.dom.CDATASection;
+
+public class JDBC1 {
+	private static final String DB_URL = "jdbc:h2:tcp://localhost/~/alek";
+	private static final String DB_USER = "alek";
+	private static final String DB_PASSWD = "";
+
+	public static void main(String[] args) throws Exception {
+		// wczytanie sterownika bazy danych (z pliku h2-[wersja].jar)
+		Class.forName("org.h2.Driver");
+
+		Connection conn = DriverManager.getConnection(DB_URL, DB_USER,
+				DB_PASSWD);
+		// kod aplikacji
+		// insertEmployee(conn, "Jan", "Kowalski");
+		// Date od1 = createDate(1996, 4, 1);
+
+		// insertPensja(conn,1,1234,od1);
+		// dodajNowegoPracownika(conn,"nacia","miterek",od1,100);
+		// wersja 2
+		// Date dateOfBirth = createDate(1990, 4, 21);
+		// insertEmployeeV2(conn, "Anna", "Nowak", dateOfBirth);
+		/*
+		 * wypisz(findEmployeeBySurname(conn, "muterek")); removeEmployee(conn,
+		 * 3); wypisz(findEmployeeBySurname(conn, "muterek"));
+		 */
+		// zamkniecie polaczenia z baza
+		// System.out.print("tu zaczynam wypisywac \n");
+		/*
+		 * System.out.println(); historiaPracownika(conn,1);
+		 */
+		// wczytajPlik(conn, "plik.txt");
+		wczytajDoPliku(conn, "plik2.txt");
+		// System.out.println(getNoOfEmployees(conn));
+		// wypiszListePracownikow(conn);
+		conn.close();
+		System.out.println("Done.");
+	}
+
+	private static void wczytajPlik(Connection dbConnection,
+			String sciezkaDoPliku) throws IOException, ParseException {
+		BufferedReader br = new BufferedReader(new FileReader(sciezkaDoPliku));
+		try {
+			String line = br.readLine();
+			while (line != null) {
+				String[] parts = line.split(" ");
+				Date date = strToDate(parts[2]);
+				insertEmployeeV2(dbConnection, parts[0], parts[1], date);
+				int workerID = getwWorkersId(dbConnection, date);
+				for (int i = 3; i < parts.length - 1; i += 2) {
+					Integer pensja = new Integer(parts[i]);
+					insertPensja(dbConnection, workerID, pensja,
+							strToDate(parts[i + 1]));
+					System.out.println(pensja + "	" + workerID + "	");
+				}
+				line = br.readLine();
+			}
+
+		} finally {
+			br.close();
+		}
+	}
+
+	private static int getwWorkersId(Connection dbConnection, Date dataUrodzenia) {
+		java.util.List<Employee> listaPracownikow = getEmployeeList(dbConnection);
+		for (Employee e : listaPracownikow) {
+			if (dataUrodzenia.equals(e.getDateOfBirth())) {
+				int wynik = e.getId();
+				return wynik;
+			}
+		}
+		return -1;
+	}
+
+	private static Date strToDate(String s) {
+		String[] date = s.split("-");
+		Integer d = new Integer(date[0]);
+		Integer m = new Integer(date[1]);
+		Integer y = new Integer(date[2]);
+		System.out.print(d);
+		Date wynik = createDate(y, m, d);
+		return wynik;
+
+	}
+
+	private static void wczytajDoPliku(Connection dbConnection,
+			String sciezkaDoPliku) throws IOException {
+		String text = "";
+		boolean pierwsza = true;
+		java.util.List<Employee> listaPracownikow = getEmployeeList(dbConnection);
+		for (Employee e : listaPracownikow) {
+			if(!pierwsza){
+				text += "\n";
+			}else{
+				pierwsza = false;
+			}
+			text += e.getFirstName() + " " + e.getSurname() + " "
+					+ e.getDateOfBirth() + " ";
+			java.util.List<Pensja> listaP = listaPlac(dbConnection, e.getId());
+			for (Pensja p : listaP) {
+				int d = p.getOd().getDay();
+				int m = p.getOd().getMonth();
+				int y = p.getOd().getYear();
+				text += p.getKwota() + " " + d + "-" + m + "-" + y + " ";
+				BufferedWriter output = null;
+				try {
+					File file = new File(sciezkaDoPliku);
+					output = new BufferedWriter(new FileWriter(file));
+					output.write(text);
+				} catch (IOException f) {
+					f.printStackTrace();
+				} finally {
+					if (output != null) {
+						output.close();
+					}
+				}
+			}
+		}
+	}
+
+	private static Pensja stworzPensjeV2(Date od, int kwota, int id_pracownika)
+			throws SQLException {
+
+		Pensja e = new Pensja();
+		e.setKwota(kwota);
+		e.setOd(od);
+		e.setId_pracownika(id_pracownika);
+		return e;
+	}
+
+	private static void historiaPracownika(Connection dbConnection, int id_prac) {
+		java.util.List<Pensja> employeeHist = new ArrayList<Pensja>();
+		PreparedStatement stmt = null;
+		try {
+			stmt = dbConnection
+					.prepareStatement("select od,kwota,id from pensja where id_pracownika=?");
+			stmt.setInt(1, id_prac);
+			System.out.println("1");
+			// stmt.executeUpdate();
+			ResultSet rs = stmt.executeQuery();
+			System.out.println("1");
+			while (rs.next()) {
+				Pensja e = stworzPensje(rs);
+				employeeHist.add(e);
+				// tylko dla testu
+				System.out
+						.println("kwota	" + e.getKwota() + "od:	" + e.getOd());
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			// w kazdym wypadku jesli stmt nie null to go zamknij -
+			// zwalnianie zasobow
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		// return employeeHist;
+	}
+
+	private static java.util.List<Pensja> listaPlac(Connection dbConnection,
+			int id_prac) {
+		java.util.List<Pensja> employeeHist = new ArrayList<Pensja>();
+		PreparedStatement stmt = null;
+		try {
+			stmt = dbConnection
+					.prepareStatement("select od,kwota,id from pensja where id_pracownika=?");
+			stmt.setInt(1, id_prac);
+			System.out.println("1");
+			// stmt.executeUpdate();
+			ResultSet rs = stmt.executeQuery();
+			System.out.println("1");
+			while (rs.next()) {
+				Pensja e = stworzPensje(rs);
+				employeeHist.add(e);
+				// tylko dla testu
+				System.out
+						.println("kwota	" + e.getKwota() + "od:	" + e.getOd());
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			// w kazdym wypadku jesli stmt nie null to go zamknij -
+			// zwalnianie zasobow
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return employeeHist;
+	}
+
+	private static Pensja stworzPensje(ResultSet rs) throws SQLException {
+
+		Pensja e = new Pensja();
+		e.setId(rs.getInt(3));
+		// pobranie pol po numerze kolumny
+		e.setKwota(rs.getInt(2));
+		// pobranie pol po nazwie kolumny
+		e.setOd(rs.getDate(1));
+		return e;
+	}
+
+	// pobieranie liczby wszystkich pracownikow w bazie
+	private static int getNoOfEmployees(Connection dbConnection) {
+		int noOfEmplyees = -1;
+
+		PreparedStatement stmt = null;
+		try {
+			stmt = dbConnection
+					.prepareStatement("select count(*) from pracownik");
+			ResultSet rs = stmt.executeQuery();
+
+			if (rs.next()) {
+				noOfEmplyees = rs.getInt(1);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			// w kazdym wypadku jesli stmt nie null to go zamknij -
+			// zwalnianie zasobow
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return noOfEmplyees;
+	}
+
+	private static void wypiszListePracownikow(Connection dbConnection) {
+		java.util.List<Employee> listaPracownikow = getEmployeeList(dbConnection);
+		for (Employee e : listaPracownikow) {
+			System.out.print(e.getId() + e.getFirstName() + e.getSurname()
+					+ e.getDateOfBirth() + "\n");
+		}
+	}
+
+	// usuniecie pracownika o okreslonym id
+	private static void removeEmployee(Connection dbConnection, int employeeId) {
+		PreparedStatement stmt = null;
+		try {
+			stmt = dbConnection
+					.prepareStatement("delete from pracownik where id=?");
+			stmt.setInt(1, employeeId);
+			stmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			// w kazdym wypadku jesli stmt nie null to go zamknij -
+			// zwalnianie zasobow
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	private static void dodajNowegoPracownika(Connection dbConnection,
+			String imie, String nazwiko, Date dataUrodzenia, int kwota) {
+
+		Calendar calendar = GregorianCalendar.getInstance();
+		Date date = new Date(calendar.getTime().getTime());
+		insertEmployeeV2(dbConnection, imie, nazwiko, dataUrodzenia);
+		java.util.List<Employee> listaPracownikow = getEmployeeList(dbConnection);
+		for (Employee e : listaPracownikow) {
+			if (imie.equals(e.getFirstName()) && nazwiko.equals(e.getSurname())
+					&& dataUrodzenia.equals(e.getDateOfBirth())) {
+				int id_pracownika = e.getId();
+				insertPensja(dbConnection, id_pracownika, kwota, date);
+				break;
+			}
+		}
+		// insertPensja(dbConnection, id_pracownika, kwota, date);
+
+	}
+
+	private static void insertEmployee(Connection dbConnection,
+			String firstName, String surname) {
+
+		Statement stmt = null;
+
+		try {
+
+			stmt = dbConnection.createStatement();
+
+			// uwaga - w tej wersji nie wstawiamy daty urodzenia
+
+			stmt.executeUpdate("insert into PRACOWNIK (imie,nazwisko) "
+
+			+ "values( '" + firstName + "', '" + surname + "')");
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			// w kazdym wypadku jesli stmt nie null to go zamknij -
+			// zwalnianie zasobow
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	private static void insertEmployeeV2(Connection dbConnection,
+			String firstName, String surname, Date dateOfBirth) {
+
+		PreparedStatement stmt = null;
+		try {
+			stmt = dbConnection
+					.prepareStatement("insert into pracownik (imie,nazwisko,data_urodzenia) "
+							+ "values(?,?,?)");
+			stmt.setString(1, firstName);
+			stmt.setString(2, surname);
+			stmt.setDate(3, dateOfBirth);
+
+			stmt.executeUpdate();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			// w kazdym wypadku jesli stmt nie null to go zamknij -
+			// zwalnianie zasobow
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	private static void insertPensja(Connection dbConnection,
+			int id_pracownika, int kwota, Date od) {
+
+		PreparedStatement stmt = null;
+		try {
+			stmt = dbConnection
+					.prepareStatement("insert into pensja (id_pracownika,kwota,od) "
+							+ "values(?,?,?)");
+			stmt.setInt(1, id_pracownika);
+			stmt.setInt(2, kwota);
+			stmt.setDate(3, od);
+
+			stmt.executeUpdate();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			// w kazdym wypadku jesli stmt nie null to go zamknij -
+			// zwalnianie zasobow
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	private static Date createDate(int year, int month, int day) {
+		Calendar calendar = GregorianCalendar.getInstance();
+		calendar.clear();
+		calendar.set(year, month, day);
+		Date date = new Date(calendar.getTime().getTime());
+		return date;
+	}
+
+	// zwraca liste wszystkich pracownikow w bazie
+	private static Employee stworzPracownika(ResultSet rs) throws SQLException {
+
+		Employee e = new Employee();
+		// pobranie pol po numerze kolumny
+		e.setId(rs.getInt(1));
+		e.setFirstName(rs.getString(2));
+		// pobranie pol po nazwie kolumny
+		e.setSurname(rs.getString("nazwisko"));
+		e.setDateOfBirth(rs.getDate("data_urodzenia"));
+		return e;
+	}
+
+	// wyszukuje pracownikow w bazie po nazwisku
+	private static java.util.List<Employee> findEmployeeBySurname(
+			Connection dbConnection, String surname) {
+		java.util.List<Employee> employeeList = new ArrayList<Employee>();
+
+		PreparedStatement stmt = null;
+		try {
+			stmt = dbConnection
+					.prepareStatement("select id,imie,nazwisko,data_urodzenia from pracownik where nazwisko like ?");
+			stmt.setString(1, surname);
+			ResultSet rs = stmt.executeQuery();
+			while (rs.next()) {
+				// tworzenie pracownika na podstawie biezacego rekordu
+				Employee e = stworzPracownika(rs);
+				employeeList.add(e);
+				// tylko dla testu
+				/*
+				 * System.out.println("Pracownik: " + e.getFirstName() + " " +
+				 * e.getSurname() + " id: " + e.getId());
+				 */
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			// w kazdym wypadku jesli stmt nie null to go zamknij -
+			// zwalnianie zasobow
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return employeeList;
+	}
+
+	private static void wypisz(java.util.List<Employee> employeeList) {
+		for (Employee e : employeeList) {
+			System.out.print(e.getId() + e.getFirstName() + e.getSurname()
+					+ e.getDateOfBirth() + "\n");
+		}
+	}
+
+	private static java.util.List<Employee> getEmployeeList(
+			Connection dbConnection) {
+		java.util.List<Employee> employeeList = new ArrayList<Employee>();
+
+		PreparedStatement stmt = null;
+		try {
+			stmt = dbConnection
+					.prepareStatement("select id,imie,nazwisko,data_urodzenia from pracownik");
+			ResultSet rs = stmt.executeQuery();
+			while (rs.next()) {
+				Employee e = stworzPracownika(rs);
+				employeeList.add(e);
+				// tylko dla testu
+				/*
+				 * System.out.println("Pracownik: " + e.getFirstName() + " " +
+				 * e.getSurname() + " id: " + e.getId());
+				 */
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			// w kazdym wypadku jesli stmt nie null to go zamknij -
+			// zwalnianie zasobow
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return employeeList;
+	}
+}
