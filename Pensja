@@ -1,0 +1,35 @@
+package pl.edu.agh.kis;
+
+import java.sql.Date;
+
+public class Pensja{
+	protected int id;
+	protected int id_pracownika;
+	protected int kwota;
+	protected Date od;
+	public int getID(){
+		return id;
+	}
+	public int getID_pracownika(){
+		return id_pracownika;
+	}
+	public int getKwota(){
+		return kwota;
+	}
+	public Date getOd(){
+		return od;
+	}
+	public void setId_pracownika(int id) {
+		this.id_pracownika = id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public void setKwota(int k) {
+		this.kwota = k;
+	}
+	public void setOd(Date d) {
+		this.od = d;
+	}
+	
+}
