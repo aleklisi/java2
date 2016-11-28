@@ -1,0 +1,103 @@
+import java.awt.FontFormatException;
+import java.io.*;
+import java.math.*;
+
+class Liczydlo {
+	File plikArgumentow;
+	File plikWynikow;
+
+	public Liczydlo(String arg,String war) {
+		plikArgumentow = new File(arg);
+		plikWynikow = new File(war);
+	}
+	double[] liczPierwiastkiWielomianu(double a, double b, double c) {
+		double[] pierwiatki = new double[4];// {re1 im1 re2 im2}
+		double delta = (b * b) - (4 * a * c);
+		if (delta < 0) {
+			pierwiatki[0] = -b / (2 * a);
+			pierwiatki[1] = -1 * Math.sqrt(-delta) / (2 * a);
+			pierwiatki[2] = -b / (2 * a);
+			pierwiatki[3] = Math.sqrt(-delta) / (2 * a);
+		}
+		if (delta == 0) {
+			pierwiatki[0] = -b / (2 * a);
+			pierwiatki[1] = 0;
+			pierwiatki[2] = -b / (2 * a);
+			pierwiatki[3] = 0;
+		}
+		if (delta > 0) {
+			pierwiatki[0] = -b / (2 * a);
+			pierwiatki[1] = -1 * Math.sqrt(delta) / (2 * a);
+			pierwiatki[2] = -b / (2 * a);
+			pierwiatki[3] = Math.sqrt(delta) / (2 * a);
+		}
+		return pierwiatki;
+	}
+
+	public double[] liniaNaDouble(String linia) {
+		double[] wynik = new double[3];
+
+		try {
+			String[] liczby = linia.split(";");
+			if (liczby.length < 3) {
+				throw new Exception("cos za mało tych liczb");
+			}
+			for (int i = 0; i < 3; i++) {
+				wynik[i] = Double.parseDouble(liczby[i]);
+			}
+			return wynik;
+		} catch (Exception e) {
+			System.out.println("cos nie tak z liczbami");
+		}
+		return wynik;
+	}
+
+	public void wczytajLiczbyZPliku() {
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(plikArgumentow));
+			String linia = br.readLine();
+			String doPliku = "";
+			double []pom;
+			while (linia != null) {
+				pom = liczPierwiastkiWielomianu(liniaNaDouble(linia)[0],liniaNaDouble(linia)[1],liniaNaDouble(linia)[2]);
+				doPliku += pom[0]+";"+pom[1]+";"+pom[2]+";"+pom[3]+ System.getProperty("line.separator");
+				linia = br.readLine();
+			}
+			wczytajWynikiDoPliku(doPliku);
+			br.close();
+		} catch (IOException e) {
+			System.out.println("moze dodaj ten plik");
+		}
+	}
+
+	public void wczytajWynikiDoPliku(String s) {
+		try {
+
+			String content = s;
+
+			
+
+			if (!plikWynikow.exists()) {
+				plikWynikow.createNewFile();
+			}
+
+			FileWriter fw = new FileWriter(plikWynikow.getAbsoluteFile());
+			BufferedWriter bw = new BufferedWriter(fw);
+			bw.write(content + "\n");
+			bw.close();
+
+			System.out.println("Done");
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+}
+
+public class pierwistkiWielomianu {
+	public static void main(String[] args) {
+		Liczydlo l = new Liczydlo("argum.txt","wyn.txt");
+		l.wczytajLiczbyZPliku();
+	}
+}
