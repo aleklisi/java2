@@ -5,16 +5,17 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
 
 public class LibraryLogs implements Logs {
 
-	private Statement ignoreStatement;
+	private Statement[] ignoreStatement = new Statement[3];
 	private List<ElementWithStat> listStatements = new ArrayList<ElementWithStat>();
 
-	public void setIgnoreStatement(Statement statement) {
+	public void setIgnoreStatement(Statement[] statement) {
 		ignoreStatement = statement;
 	}
 
@@ -27,7 +28,6 @@ public class LibraryLogs implements Logs {
 			this.statement = statement;
 			this.info = info;
 			
-			//Calendar calendar = Calendar.getInstance();
 			SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 			Date date = new Date();
 			dateBirthday = dateFormat.format(date);
@@ -36,28 +36,54 @@ public class LibraryLogs implements Logs {
 		public String toString() {
 			return dateBirthday + " " + statement + ": " + info;
 		}
+		
+		public Statement getStatement(){
+			return statement;
+		}
 	}
-
+	
 	private ElementWithStat getInner(Statement statement, String info) {
 		return new ElementWithStat(statement, info);
 	}
 
-	public void displayStatement() {
+	private void displayChoose(Statement choosen){
 		for (ElementWithStat e : listStatements) {
-			System.out.println(e);
+			if (e.getStatement().equals(choosen)){
+				System.out.println(e);
+			}
 		}
 	}
-
-	private boolean checkOutList(Statement statement, String info) {
-		if (statement.equals(ignoreStatement)) {
-			System.out.println("Ten komunikat jest ignorowany");
-			return false;
+	
+	public void displayStatement() {
+		displayChoose(Statement.ERROR);
+		displayChoose(Statement.WARNING);
+		displayChoose(Statement.INFO);
+	}
+	
+	private boolean checkOutList(Statement statement) {
+		for (Statement stat : ignoreStatement){
+			if (stat.equals(statement)){
+				System.out.println("Ten komunikat jest ignorowany");
+				return false;
+			}
 		}
 		return true;
 	}
 
-	public void addStatement(Statement statement, String info) {
-		if (checkOutList(statement, info)) {
+	public void addError(String info){
+		addStatement(Statement.ERROR, info);
+	}
+	
+	public void addWarning(String info){
+		addStatement(Statement.WARNING, info);
+	}
+	
+	public void addInfo(String info){
+		addStatement(Statement.INFO, info);
+	}
+	
+	private void addStatement(Statement statement, String info) {
+		if (checkOutList(statement)) {
 			listStatements.add(getInner(statement, info));
 		}
 	}
@@ -109,7 +135,25 @@ public class LibraryLogs implements Logs {
 	}		
 	
 	public static void main(String[] args) {
-
+		LibraryLogs library = new LibraryLogs();
+		Statement[] ignoreStat = new Statement[2];
+		ignoreStat[0] = Statement.INFO;
+		ignoreStat[1] = Statement.WARNING;
+		
+		library.setIgnoreStatement(ignoreStat);
+		library.addWarning("Wywalam error");
+		try{
+			//arg w milisekundach
+			Thread.sleep(2000);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
+		library.addError("Wywalam error");
+		library.addInfo( "NIE Wywalam info");
+		library.writeStatementToFile();
+		library.displayStatement();
+		
 	}
 
 }
