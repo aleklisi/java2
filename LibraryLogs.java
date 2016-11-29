@@ -13,11 +13,11 @@ public class LibraryLogs implements Logs {
 	Statement ignoreStatement;
 	List<ElementWithStat> listStatements = new ArrayList<ElementWithStat>();
 
-	LibraryLogs(Statement statement) {
+	void setIgnoreStatement(Statement statement) {
 		ignoreStatement = statement;
 	}
 
-	class ElementWithStat {
+	private class ElementWithStat {
 		Statement statement;
 		String info;
 
