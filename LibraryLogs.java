@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Date;
 
 public class LibraryLogs implements Logs {
 
@@ -20,14 +21,20 @@ public class LibraryLogs implements Logs {
 	private class ElementWithStat {
 		Statement statement;
 		String info;
-
+		String dateBirthday;
+		
 		public ElementWithStat(Statement statement, String info) {
 			this.statement = statement;
 			this.info = info;
+			
+			//Calendar calendar = Calendar.getInstance();
+			SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+			Date date = new Date();
+			dateBirthday = dateFormat.format(date);
 		}
 
 		public String toString() {
-			return statement + ": " + info;
+			return dateBirthday + " " + statement + ": " + info;
 		}
 	}
 
