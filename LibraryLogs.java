@@ -10,10 +10,10 @@ import java.util.List;
 
 public class LibraryLogs implements Logs {
 
-	Statement ignoreStatement;
-	List<ElementWithStat> listStatements = new ArrayList<ElementWithStat>();
+	private Statement ignoreStatement;
+	private List<ElementWithStat> listStatements = new ArrayList<ElementWithStat>();
 
-	void setIgnoreStatement(Statement statement) {
+	public void setIgnoreStatement(Statement statement) {
 		ignoreStatement = statement;
 	}
 
@@ -31,7 +31,7 @@ public class LibraryLogs implements Logs {
 		}
 	}
 
-	ElementWithStat getInner(Statement statement, String info) {
+	private ElementWithStat getInner(Statement statement, String info) {
 		return new ElementWithStat(statement, info);
 	}
 
@@ -41,7 +41,7 @@ public class LibraryLogs implements Logs {
 		}
 	}
 
-	public boolean checkOutList(Statement statement, String info) {
+	private boolean checkOutList(Statement statement, String info) {
 		if (statement.equals(ignoreStatement)) {
 			System.out.println("Ten komunikat jest ignorowany");
 			return false;
@@ -49,14 +49,13 @@ public class LibraryLogs implements Logs {
 		return true;
 	}
 
-	public void addToList(Statement statement, String info) {
+	public void addStatement(Statement statement, String info) {
 		if (checkOutList(statement, info)) {
 			listStatements.add(getInner(statement, info));
 		}
 	}
 
 	public void writeStatementToFile() {
-
 		try {
 			PrintWriter out = new PrintWriter("statement.txt");
 			for (ElementWithStat e : listStatements) {
