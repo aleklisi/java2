@@ -72,9 +72,9 @@ public class LibraryLogs implements Logs {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		// finally{
-		// out.close();
-		// }
+		 finally{
+			 clear();
+		 }
 	}
 
 	public void readStatementFromFile() {
@@ -103,6 +103,11 @@ public class LibraryLogs implements Logs {
 		}
 	}
 
+	public void clear(){
+		listStatements.clear();	
+		System.out.println("Wyczyszono bufor z informacji");
+	}		
+	
 	public static void main(String[] args) {
 
 	}
