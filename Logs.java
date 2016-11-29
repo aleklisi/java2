@@ -8,5 +8,6 @@ public interface Logs {
 	public void displayStatement();
 	public void writeStatementToFile();
 	public void readStatementFromFile();
-	public void addStatement(Statement statement, String info) {
+	public void addStatement(Statement statement, String info);
+	public void clear();
 }
